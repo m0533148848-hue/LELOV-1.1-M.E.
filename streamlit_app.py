@@ -1,49 +1,49 @@
 import streamlit as st
 import google.generativeai as genai
 
-# כותרת האפליקציה
-st.title("הצ'אט שלי עם ג'מיני ⚡")
+# כותרת המערכת
+st.title("מערכת ניהול הנתונים שלי 📊")
 
-# הגדרת המפתח - מושך אותו מהכספת של סטרימליט
+# חיבור למפתח
 if "GOOGLE_API_KEY" in st.secrets:
-    api_key = st.secrets["GOOGLE_API_KEY"]
-    genai.configure(api_key=api_key)
+    genai.configure(api_key=st.secrets["GOOGLE_API_KEY"])
 else:
-    st.error("חסר מפתח API. נא להגדיר אותו בהגדרות של Streamlit.")
+    st.error("חסר מפתח API")
     st.stop()
 
-# --- הגדרת המודל: שימוש במודל היציב והחינמי ביותר ---
-try:
-    model = genai.GenerativeModel('gemini-1.5-flash')
-except Exception as e:
-    st.error(f"שגיאה בטעינת המודל: {e}")
-    st.stop()
+# --- כאן הקסם: הגדרת המוח של המערכת ---
+# העתיקו לפה את ההוראות המדויקות שכתבתם ב-AI Studio
+system_instruction = """
+אתה מנהל מערכת נתונים מומחה.
+התפקיד שלך הוא: [כאן תדביקו את ההוראות שלכם]
+הנתונים שיש לך הם: [כאן תדביקו את הנתונים או החוקים]
+אסור לך לחרוג מההוראות האלו.
+"""
 
-# שמירת היסטוריית השיחה בזיכרון
+# הגדרת המודל עם ההוראות המיוחדות
+model = genai.GenerativeModel(
+    model_name='gemini-1.5-flash',
+    system_instruction=system_instruction
+)
+
+# ממשק המשתמש
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
-# הצגת כל ההודעות הקודמות על המסך
+# הצגת היסטוריה
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# תיבת הטקסט למטה
-if prompt := st.chat_input("הקלידו הודעה כאן..."):
-    # 1. הצגת הודעת המשתמש
+# קלט
+if prompt := st.chat_input("הכנס נתונים או בקשה..."):
     st.chat_message("user").markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
 
-    # 2. שליחה לגוגל
     try:
+        # שליחה למודל (שעכשיו יודע את ההוראות שלכם)
         response = model.generate_content(prompt)
-        bot_reply = response.text
-        
-        # 3. הצגת תשובת הבוט
-        with st.chat_message("assistant"):
-            st.markdown(bot_reply)
-        st.session_state.messages.append({"role": "assistant", "content": bot_reply})
-        
+        st.chat_message("assistant").markdown(response.text)
+        st.session_state.messages.append({"role": "assistant", "content": response.text})
     except Exception as e:
-        # הצגת שגיאה ברורה אם משהו משתבש
-        st.error(f"אירעה תקלה: {e}")
+        st.error(f"שגיאה: {e}")
