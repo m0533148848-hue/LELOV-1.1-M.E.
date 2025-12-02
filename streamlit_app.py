@@ -2,7 +2,7 @@ import streamlit as st
 import google.generativeai as genai
 
 # כותרת האפליקציה
-st.title("הצ'אט שלי עם ג'מיני 2.0 ⚡")
+st.title("הצ'אט שלי עם ג'מיני ⚡")
 
 # הגדרת המפתח - מושך אותו מהכספת של סטרימליט
 if "GOOGLE_API_KEY" in st.secrets:
@@ -12,9 +12,9 @@ else:
     st.error("חסר מפתח API. נא להגדיר אותו בהגדרות של Streamlit.")
     st.stop()
 
-# --- הגדרת המודל: משתמשים בגרסה 2.0 המהירה והפתוחה ---
+# --- הגדרת המודל: שימוש במודל היציב והחינמי ביותר ---
 try:
-    model = genai.GenerativeModel('gemini-2.0-flash-exp')
+    model = genai.GenerativeModel('gemini-1.5-flash')
 except Exception as e:
     st.error(f"שגיאה בטעינת המודל: {e}")
     st.stop()
@@ -45,4 +45,5 @@ if prompt := st.chat_input("הקלידו הודעה כאן..."):
         st.session_state.messages.append({"role": "assistant", "content": bot_reply})
         
     except Exception as e:
-        st.error(f"אירעה תקלה בשליחה: {e}")
+        # הצגת שגיאה ברורה אם משהו משתבש
+        st.error(f"אירעה תקלה: {e}")
