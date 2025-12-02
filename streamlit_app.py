@@ -14,8 +14,7 @@ else:
     st.stop()
 
 # בחירת המודל
-model = genai.GenerativeModel('gemini-1.5-flash')
-
+model = genai.GenerativeModel('gemini-pro')
 # שמירת היסטוריית השיחה בזיכרון
 if "messages" not in st.session_state:
     st.session_state.messages = []
